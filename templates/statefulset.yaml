@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: iot-pentaho
+  labels:
+    fiware.app: smartcities
+    fiware.module: pentaho
+    fiware.tier: backend
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      fiware.app: smartcities
+      fiware.module: pentaho
+      fiware.tier: backend
+  template:
+    metadata:
+      labels:
+        fiware.app: smartcities
+        fiware.module: pentaho
+        fiware.tier: backend
+    spec:
+      initContainers:
+      # Create .firstboot file so the container does not try to
+      # write the schema to postgres
+      - name: firstboot
+        image: pentaho-full:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        command:
+        - /bin/bash
+        args:
+        - "-c"
+        - "touch /opt/pentaho-server/.firstboot"
+        volumeMounts:
+        - name: pentaho-server
+          mountPath: /opt/pentaho-server
+      - name: unzip
+        image: pentaho-full:latest
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        command:
+        - /bin/bash
+        args:
+        - "-c"
+        - "cd /opt && unzip /tmp/pentaho-server-ce-${PENTAHO_VERSION}.zip"
+        volumeMounts:
+        - name: pentaho-server
+          mountPath: /opt/pentaho-server
+      - name: config
+        image: pentaho-full:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        command:
+        - /bin/bash
+        args:
+        - "-c"
+        - >-
+          /opt/config.sh "$POSTGRES_HOST" "$POSTGRES_PORT" "$PENTAHO_PREF" unused `hostname`
+          > /opt/pentaho-server/schema.sql
+        envFrom:
+        - configMapRef:
+            name: credentials
+        volumeMounts:
+        - name: pentaho-server
+          mountPath: /opt/pentaho-server
+      containers:
+      - name: pentaho
+        image: pentaho-full:latest
+        ports:
+        - containerPort: 7001
+          name: web
+        resources:
+          requests:
+            cpu: 200m
+            memory: 1Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
+        envFrom:
+        - configMapRef:
+            name: credentials
+        env:
+        - name: PENTAHO_PORT
+          value: "7001"
+        - name: PROXY_PORT
+          value: "7001"
+        - name: PROXY_SCHEME
+          value: "http"
+        volumeMounts:
+        - name: pentaho-server
+          mountPath: /opt/pentaho-server
+        - name: kettle-cache
+          mountPath: /.kettle
+        - name: pentaho-cache
+          mountPath: /.pentaho
+        - name: esapi-home
+          mountPath: /home/pentaho/esapi
+        - name: kettle-home
+          mountPath: /home/pentaho/kettle
+      volumes:
+      - name: pentaho-server
+        emptyDir: {}
+      - name: kettle-cache
+        emptyDir: {}
+      - name: pentaho-cache
+        emptyDir: {}
+      - name: esapi-home
+        emptyDir: {}
+      - name: kettle-home
+        emptyDir: {}
+  triggers:    
+  - type: "ImageChange"
+    imageChangeParams:
+      automatic: true # this is required to link the build and deployment
+      containerNames:
+        - firstboot
+        - config
+        - unzip
+        - pentaho
+      from:
+        kind: ImageStreamTag
+        name: pentaho-full:latest
