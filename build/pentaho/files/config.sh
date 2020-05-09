@@ -26,6 +26,9 @@ fi
 # Configuration file golden repository and scratch space
 export CONFIG_GOLDEN=/opt/config
 export CONFIG_UPDATE=/tmp/scratch
+if ! [ -d "$CONFIG_UPDATE" ]; then
+    mkdir -p "$CONFIG_UPDATE"
+fi
 
 # Get configuration parameters:
 # 1: POSTGRESQL Server name

@@ -9,3 +9,6 @@ RUN cd /tmp && wget "https://downloads.sourceforge.net/project/pentaho/Pentaho%2
 ADD files/check_vol.sh /opt/check_vol.sh
 ADD files/config.sh /opt/config.sh
 ADD files/pentaho-dsp.sh /opt/hooks/pentaho-dsp.sh
+
+# Replace failing PGPASSFILE path
+ENV PGPASSFILE "/tmp/.pgpass"
