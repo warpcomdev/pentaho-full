@@ -7,5 +7,5 @@ RUN cd /tmp && wget "https://downloads.sourceforge.net/project/pentaho/Pentaho%2
 
 # Replace failing check_vol.sh
 ADD files/check_vol.sh /opt/check_vol.sh
-ADD files/check_vol.sh /opt/config.sh
+ADD files/config.sh /opt/config.sh
 ADD files/pentaho-dsp.sh /opt/hooks/pentaho-dsp.sh
