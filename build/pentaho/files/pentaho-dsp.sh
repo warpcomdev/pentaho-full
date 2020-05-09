@@ -27,8 +27,9 @@ if [ -f "${LIBDIR}/pentaho-dsp.jar" ]; then
 fi
 
 echo "COMPILANDO pentaho-dsp.jar"
-cd /home/pentaho; find src -name "*.java" | xargs javac -d /tmp/dist -cp "${LIBDIR}/*"
-cd /tmp/dist;     jar cvf pentaho-dsp.jar org
+mkdir -p /tmp/dist && cd /tmp/dist
+find /home/pentaho/src -name "*.java" | xargs javac -d /tmp/dist -cp "${LIBDIR}/*"
+jar cvf pentaho-dsp.jar org
 
 echo "INSTALANDO pentaho-dsp.jar"
 mv pentaho-dsp.jar "${LIBDIR}/"
