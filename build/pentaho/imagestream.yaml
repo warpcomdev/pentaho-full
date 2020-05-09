@@ -1,0 +1,7 @@
+---
+kind: "ImageStream"
+apiVersion: "v1"
+metadata:
+  name: "pentaho-full"
+spec:
+  completionDeadlineSeconds: 7200

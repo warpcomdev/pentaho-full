@@ -1,0 +1,20 @@
+---
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: "pentaho-full"
+spec:
+  runPolicy: "Serial"
+  triggers:
+    - type: "ConfigChange"
+  source:
+    git:
+      uri: "https://github.com/warpcomdev/pentaho-full"
+      ref: "master"
+    contextDir: "build/pentaho"
+  strategy:
+    dockerStrategy: {}
+  output:
+    to:
+      kind: "ImageStreamTag"
+      name: "pentaho-full:latest"
