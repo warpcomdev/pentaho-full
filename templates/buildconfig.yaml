@@ -2,7 +2,7 @@
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  name: "pentaho-full-v0.1.0"
+  name: "pentaho-full-v{{ .Values.pentahoVersion }}"
 spec:
   completionDeadlineSeconds: 1800
   runPolicy: "Serial"
@@ -12,7 +12,7 @@ spec:
     type: "git"
     git:
       uri: "https://github.com/warpcomdev/pentaho-full"
-      ref: "v0.1.0"
+      ref: "v{{ .Values.pentahoVersion }}"
     contextDir: "build/pentaho"
   strategy:
     type: "docker"
@@ -20,4 +20,4 @@ spec:
   output:
     to:
       kind: "ImageStreamTag"
-      name: "pentaho-full:0.1.0"
+      name: "pentaho-full:{{ .Values.pentahoVersion }}"

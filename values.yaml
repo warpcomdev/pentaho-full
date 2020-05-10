@@ -1,0 +1,11 @@
+---
+postgresqlHost: "postgresql"
+postgresqlPort: 5432
+jackrabbitPass: "postgres"
+quartzPass: "postgres"
+hibernatePass: "postgres"
+
+pentahoVersion: "0.2.0"
+pentahoPort: 7001
+proxyPort: 7001
+proxyScheme: "http"

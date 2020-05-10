@@ -24,6 +24,8 @@ spec:
   serviceName: {{ .Release.Name }}-pentaho
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
       labels:
         fiware.app: smartcities
         fiware.release: {{ .Release.Name }}
@@ -34,7 +36,7 @@ spec:
       # Create .firstboot file so the container does not try to
       # write the schema to postgres
       - name: firstboot
-        image: pentaho-full:0.1.0
+        image: pentaho-full:{{ .Values.pentahoVersion }}
         resources:
           requests:
             cpu: 100m
@@ -48,7 +50,7 @@ spec:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
       - name: unzip
-        image: pentaho-full:0.1.0
+        image: pentaho-full:{{ .Values.pentahoVersion }}
         resources:
           requests:
             cpu: 500m
@@ -62,7 +64,7 @@ spec:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
       - name: config
-        image: pentaho-full:0.1.0
+        image: pentaho-full:{{ .Values.pentahoVersion }}
         resources:
           requests:
             cpu: 100m
@@ -75,14 +77,14 @@ spec:
           /opt/config.sh "$POSTGRES_HOST" "$POSTGRES_PORT" "$PENTAHO_PREF" unused `hostname`
           > /opt/pentaho-server/schema.sql
         envFrom:
-        - configMapRef:
+        - secretRef:
             name: {{ .Release.Name }}-credentials
         volumeMounts:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
       containers:
       - name: pentaho
-        image: pentaho-full:0.1.0
+        image: pentaho-full:{{ .Values.pentahoVersion }}
         ports:
         - containerPort: 7001
           name: web
@@ -94,15 +96,15 @@ spec:
             cpu: 2
             memory: 4Gi
         envFrom:
-        - configMapRef:
+        - secretRef:
             name: {{ .Release.Name }}-credentials
         env:
         - name: PENTAHO_PORT
-          value: "7001"
+          value: {{ .Values.pentahoPort | toString | quote }}
         - name: PROXY_PORT
-          value: "7001"
+          value: {{ .Values.proxyPort | toString | quote }}
         - name: PROXY_SCHEME
-          value: http
+          value: {{ .Values.proxyScheme }}
         volumeMounts:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
@@ -120,7 +122,7 @@ spec:
             port: web
             httpHeaders:
             - name: X-FORWARDED-PROTO
-              value: http
+              value: {{ .Values.pentahoPort | toString | quote }}
           failureThreshold: 3
           periodSeconds: 15
           timeoutSeconds: 5
@@ -157,4 +159,3 @@ spec:
         emptyDir: {}
       - name: kettle-home
         emptyDir: {}
-
