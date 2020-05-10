@@ -4,15 +4,18 @@ apiVersion: build.openshift.io/v1
 metadata:
   name: "pentaho-full-v0.1.0"
 spec:
+  completionDeadlineSeconds: 1800
   runPolicy: "Serial"
   triggers:
     - type: "ConfigChange"
   source:
+    type: "git"
     git:
       uri: "https://github.com/warpcomdev/pentaho-full"
       ref: "v0.1.0"
     contextDir: "build/pentaho"
   strategy:
+    type: "docker"
     dockerStrategy: {}
   output:
     to:

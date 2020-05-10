@@ -1,7 +1,10 @@
 ---
-kind: "ImageStream"
-apiVersion: "v1"
+apiVersion: image.openshift.io/v1
+kind: ImageStream
 metadata:
-  name: "pentaho-full"
-spec:
-  completionDeadlineSeconds: 7200
+  name: pentaho-full
+  labels:
+    fiware.app: smartcities
+    fiware.module: pentaho
+    fiware.tier: backend
+spec: {}

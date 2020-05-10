@@ -19,6 +19,7 @@ spec:
       fiware.app: smartcities
       fiware.module: pentaho
       fiware.tier: backend
+  serviceName: iot-pentaho
   template:
     metadata:
       labels:

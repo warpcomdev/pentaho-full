@@ -1,0 +1,7 @@
+apiVersion: 2
+name: iot-pentaho
+description: StatefulSet Pentaho
+version: "0.1.0"
+appVersion: "0.1.2"
+kubeVersion: ">= 1.16.0"
+type: application
