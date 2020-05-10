@@ -26,7 +26,7 @@ spec:
       # Create .firstboot file so the container does not try to
       # write the schema to postgres
       - name: firstboot
-        image: pentaho-full:latest
+        image: pentaho-full:v0.1.0
         resources:
           requests:
             cpu: 100m
@@ -40,7 +40,7 @@ spec:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
       - name: unzip
-        image: pentaho-full:latest
+        image: pentaho-full:v0.1.0
         resources:
           requests:
             cpu: 500m
@@ -54,7 +54,7 @@ spec:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
       - name: config
-        image: pentaho-full:latest
+        image: pentaho-full:v0.1.0
         resources:
           requests:
             cpu: 100m
@@ -74,7 +74,7 @@ spec:
           mountPath: /opt/pentaho-server
       containers:
       - name: pentaho
-        image: pentaho-full:latest
+        image: pentaho-full:v0.1.0
         ports:
         - containerPort: 7001
           name: web
@@ -128,4 +128,4 @@ spec:
         - pentaho
       from:
         kind: ImageStreamTag
-        name: pentaho-full:latest
+        name: pentaho-full:v0.1.0S
