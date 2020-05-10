@@ -1,9 +1,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: iot-pentaho
+  name: {{ .Release.Name }}-pentaho
   labels:
     fiware.app: smartcities
+    fiware.release: {{ .Release.Name }}
     fiware.module: pentaho
     fiware.tier: backend
   annotations:
@@ -17,13 +18,15 @@ spec:
   selector:
     matchLabels:
       fiware.app: smartcities
+      fiware.release: {{ .Release.Name }}
       fiware.module: pentaho
       fiware.tier: backend
-  serviceName: iot-pentaho
+  serviceName: {{ .Release.Name }}-pentaho
   template:
     metadata:
       labels:
         fiware.app: smartcities
+        fiware.release: {{ .Release.Name }}
         fiware.module: pentaho
         fiware.tier: backend
     spec:
@@ -73,7 +76,7 @@ spec:
           > /opt/pentaho-server/schema.sql
         envFrom:
         - configMapRef:
-            name: credentials
+            name: {{ .Release.Name }}-credentials
         volumeMounts:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
@@ -92,7 +95,7 @@ spec:
             memory: 4Gi
         envFrom:
         - configMapRef:
-            name: credentials
+            name: {{ .Release.Name }}-credentials
         env:
         - name: PENTAHO_PORT
           value: "7001"
