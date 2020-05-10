@@ -10,6 +10,10 @@ metadata:
     alpha.image.policy.openshift.io/resolve-names: '*'
 spec:
   replicas: 2
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
   selector:
     matchLabels:
       fiware.app: smartcities
@@ -26,7 +30,7 @@ spec:
       # Create .firstboot file so the container does not try to
       # write the schema to postgres
       - name: firstboot
-        image: pentaho-full:v0.1.0
+        image: pentaho-full:0.1.0
         resources:
           requests:
             cpu: 100m
@@ -40,7 +44,7 @@ spec:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
       - name: unzip
-        image: pentaho-full:v0.1.0
+        image: pentaho-full:0.1.0
         resources:
           requests:
             cpu: 500m
@@ -54,7 +58,7 @@ spec:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
       - name: config
-        image: pentaho-full:v0.1.0
+        image: pentaho-full:0.1.0
         resources:
           requests:
             cpu: 100m
@@ -74,7 +78,7 @@ spec:
           mountPath: /opt/pentaho-server
       containers:
       - name: pentaho
-        image: pentaho-full:v0.1.0
+        image: pentaho-full:0.1.0
         ports:
         - containerPort: 7001
           name: web
@@ -117,15 +121,4 @@ spec:
         emptyDir: {}
       - name: kettle-home
         emptyDir: {}
-  triggers:    
-  - type: "ImageChange"
-    imageChangeParams:
-      automatic: true # this is required to link the build and deployment
-      containerNames:
-        - firstboot
-        - config
-        - unzip
-        - pentaho
-      from:
-        kind: ImageStreamTag
-        name: pentaho-full:v0.1.0S
+
