@@ -98,7 +98,7 @@ spec:
         - name: PROXY_PORT
           value: "7001"
         - name: PROXY_SCHEME
-          value: "http"
+          value: http
         volumeMounts:
         - name: pentaho-server
           mountPath: /opt/pentaho-server
@@ -110,6 +110,38 @@ spec:
           mountPath: /home/pentaho/esapi
         - name: kettle-home
           mountPath: /home/pentaho/kettle
+        livenessProbe:
+          httpGet:
+            path: /pentaho/Login
+            port: web
+            httpHeaders:
+            - name: X-FORWARDED-PROTO
+              value: http
+          failureThreshold: 3
+          periodSeconds: 15
+          timeoutSeconds: 5
+          initialDelaySeconds: 150
+        # Not currently supported!
+        # startupProbe:
+        #   httpGet:
+        #     path: /pentaho/Login
+        #     port: web
+        #     httpHeaders:
+        #     - name: X-FORWARDED-PROTO
+        #       value: http
+        #   failureThreshold: 20
+        #   periodSeconds: 15
+        #   timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /pentaho/Login
+            port: web
+            httpHeaders:
+            - name: X-FORWARDED-PROTO
+              value: http
+          periodSeconds: 15
+          successThreshold: 3
+          timeoutSeconds: 5
       volumes:
       - name: pentaho-server
         emptyDir: {}
